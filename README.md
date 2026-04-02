@@ -1,237 +1,204 @@
-# Agent Starter
+# Bathroom Access Concierge
 
-![npm i agents command](./npm-agents-banner.svg)
+Bathroom Access Concierge is a conversational AI agent for finding public restrooms with accessibility-aware filtering, follow-up refinement, remembered preferences, and route-based suggestions.
 
-<a href="https://deploy.workers.cloudflare.com/?url=https://github.com/cloudflare/agents-starter"><img src="https://deploy.workers.cloudflare.com/button" alt="Deploy to Cloudflare"/></a>
+It is built as an AI layer on top of restroom data, with a chat interface that lets users ask natural questions like:
 
-A starter template for building AI chat agents on Cloudflare, powered by the [Agents SDK](https://developers.cloudflare.com/agents/).
+- “Show me accessible restrooms near Back Bay.”
+- “I’m at Fisherman’s Wharf and heading to Union Square. Suggest one along the way.”
+- “What about one closer to the destination?”
+- “Remember that I prefer single-stall restrooms.”
 
-Uses Workers AI (no API key required), with tools for weather, timezone detection, calculations with approval, task scheduling, and vision (image input).
+## Live demo
 
-## Quick start
+Deployed app:
+
+`https://cf-ai-amithsaligrama.saligrama-amith.workers.dev/`
+
+## What the app does
+
+Bathroom Access Concierge lets users:
+
+- search for restrooms by city, neighborhood, landmark, or route
+- filter for wheelchair accessibility, single-stall preference, changing tables, and open-now needs
+- ask follow-up questions without restarting the search
+- store simple user preferences across the conversation
+- get clearer restroom recommendations instead of raw map/database rows
+
+## Best cities to try first
+
+**For the strongest demo experience, ask about Boston, New York City, or San Francisco.**
+
+Those cities currently have the most complete and best-tested restroom coverage in this project, so they produce the most reliable location filtering, accessibility matching, and route-based suggestions.
+
+Recommended city phrasing:
+
+- **Boston**: Back Bay, Seaport, North End, South Station, Charlestown
+- **New York City**: Manhattan, Times Square, Midtown, SoHo, Lower Manhattan
+- **San Francisco**: Fisherman’s Wharf, Union Square, SoMa, Mission District, Financial District
+
+If you ask about other cities, the app may still return results, but coverage is less consistent.
+
+## How to use the application
+
+The app works best when the user gives it location context first, then adds constraints.
+
+### 1. Start with a location
+
+Use a city, neighborhood, landmark, or route.
+
+Examples:
+
+- `Show me restroom options near Back Bay in Boston.`
+- `Find a restroom near Times Square in New York City.`
+- `Show me options near Fisherman’s Wharf in San Francisco.`
+
+### 2. Add what matters to you
+
+The app can use constraints such as:
+
+- wheelchair accessible
+- single-stall
+- open now
+- changing table
+
+Examples:
+
+- `Find a wheelchair-accessible restroom near Back Bay.`
+- `Show me open restrooms with a changing table near Union Square.`
+- `I prefer single-stall restrooms.`
+
+### 3. Use follow-up questions
+
+Once the app has a search context, you can refine without repeating everything.
+
+Examples:
+
+- `What about one closer to the destination?`
+- `Can you keep it in the same city?`
+- `Show me another option.`
+- `Only show accessible ones.`
+
+### 4. Ask route-based questions
+
+You can search along a route by giving both a start and end point.
+
+Examples:
+
+- `I’m at Back Bay and going to Charlestown. Show accessible bathrooms along the way.`
+- `I’m near Fisherman’s Wharf and heading to Union Square. Suggest one on the way.`
+
+### 5. Save preferences
+
+The agent remembers basic preferences during the session.
+
+Examples:
+
+- `Remember that I need wheelchair access.`
+- `Remember that I prefer single-stall restrooms.`
+- `I usually care about changing tables.`
+
+### 6. Reset when switching cities
+
+If you radically change context, use **Clear** in the UI before starting a new city search. This avoids carrying over route or preference state from the previous conversation.
+
+## Suggested demo prompts
+
+If you want a fast demo flow, use these:
+
+### Boston
+
+- `Show me accessible restrooms near Back Bay.`
+- `I’m at Back Bay and going to Charlestown. Show accessible bathrooms along the way.`
+- `What about one closer to the destination?`
+
+### New York City
+
+- `Find a restroom near Times Square in New York City.`
+- `Only show wheelchair-accessible options.`
+- `Show me one closer to SoHo.`
+
+### San Francisco
+
+- `Show me restroom options near Fisherman’s Wharf in San Francisco.`
+- `I’m heading to Union Square. Suggest one along the way.`
+- `Remember that I prefer single-stall restrooms.`
+
+## Architecture
+
+This project is designed to satisfy the application requirements for an AI-powered app with:
+
+- an LLM
+- workflow / coordination
+- user input through chat
+- memory / state
+
+### Components
+
+- **Frontend:** React + Vite
+- **Backend:** Cloudflare Workers + Agents
+- **Agent runtime:** `AIChatAgent`
+- **LLM:** Workers AI
+- **State:** persistent agent state for user preferences and current search context
+- **Data layer:** restroom dataset exported into app-readable TypeScript data
+
+### Workflow / coordination
+
+The app’s search flow is:
+
+1. parse the user request
+2. detect explicit city / area / route context
+3. merge request filters with remembered preferences
+4. filter candidate restrooms by city and request constraints
+5. score and rank results
+6. return natural-language recommendations
+
+## Running locally
+
+Install dependencies:
 
 ```bash
-npx create-cloudflare@latest --template cloudflare/agents-starter
-cd agents-starter
 npm install
+```
+
+Run the dev server:
+
+```bash
 npm run dev
 ```
 
-Open [http://localhost:5173](http://localhost:5173) to see your agent in action.
+Open the local URL shown in the terminal, typically:
 
-Try these prompts to see the different features:
-
-- **"What's the weather in Paris?"** — server-side tool (runs automatically)
-- **"What timezone am I in?"** — client-side tool (browser provides the answer)
-- **"Calculate 5000 \* 3"** — approval tool (asks you before running)
-- **"Remind me in 5 minutes to take a break"** — scheduling
-- **Drop an image and ask "What's in this image?"** — vision (image understanding)
-
-## Project structure
-
-```
-src/
-  server.ts    # Chat agent with tools and scheduling
-  app.tsx      # Chat UI built with Kumo components
-  client.tsx   # React entry point
-  styles.css   # Tailwind + Kumo styles
+```text
+http://localhost:5173
 ```
 
-## What's included
+## Deploying
 
-- **AI Chat** — Streaming responses powered by Workers AI via `AIChatAgent`
-- **Image input** — Drag-and-drop, paste, or click to attach images for vision-capable models
-- **Three tool patterns** — server-side auto-execute, client-side (browser), and human-in-the-loop approval
-- **Scheduling** — one-time, delayed, and recurring (cron) tasks
-- **Reasoning display** — shows model thinking as it streams, collapses when done
-- **Debug mode** — toggle in the header to inspect raw message JSON for each message
-- **Kumo UI** — Cloudflare's design system with dark/light mode
-- **Real-time** — WebSocket connection with automatic reconnection and message persistence
-
-## Making it your own
-
-### Name your project
-
-Update the name in `package.json` and `wrangler.jsonc` — the `name` in `wrangler.jsonc` becomes your deployed Worker's URL (`<name>.<subdomain>.workers.dev`).
-
-### Change the system prompt
-
-Edit the `system` string in `server.ts` to give your agent a different personality or focus area. This is the most impactful single change you can make.
-
-### Replace the demo tools with real ones
-
-The starter ships with demo tools (`getWeather` returns random data, `calculate` does basic arithmetic). Replace them with real implementations:
-
-```ts
-// In server.ts, replace a demo tool with a real API call:
-getWeather: tool({
-  description: "Get the current weather for a city",
-  inputSchema: z.object({ city: z.string() }),
-  execute: async ({ city }) => {
-    const res = await fetch(`https://api.weather.example/${city}`);
-    return res.json();
-  }
-}),
-```
-
-### Add your own tools
-
-Add new tools to the `tools` object in `server.ts`. There are three patterns:
-
-```ts
-// Auto-execute: runs on the server, no user interaction
-myTool: tool({
-  description: "...",
-  inputSchema: z.object({ /* ... */ }),
-  execute: async (input) => { /* return result */ }
-}),
-
-// Client-side: no execute function, browser provides the result
-// Handle it in app.tsx via the onToolCall callback
-browserTool: tool({
-  description: "...",
-  inputSchema: z.object({ /* ... */ })
-}),
-
-// Approval: add needsApproval to gate execution
-sensitiveTool: tool({
-  description: "...",
-  inputSchema: z.object({ /* ... */ }),
-  needsApproval: async (input) => true, // or conditional logic
-  execute: async (input) => { /* runs after approval */ }
-}),
-```
-
-### Customize scheduled task behavior
-
-When a scheduled task fires, `executeTask` runs on the server. It does its work and then uses `this.broadcast()` to notify connected clients (shown as a toast notification in the UI). Replace it with your own logic:
-
-```ts
-async executeTask(description: string, task: Schedule<string>) {
-  // Do the actual work
-  await sendEmail({ to: "user@example.com", subject: description });
-
-  // Notify connected clients
-  this.broadcast(
-    JSON.stringify({ type: "scheduled-task", description, timestamp: new Date().toISOString() })
-  );
-}
-```
-
-> **Why `broadcast()` instead of `saveMessages()`?** Injecting into chat history can cause the AI to see the notification as new context and re-trigger the same task in a loop. `broadcast()` sends a one-off event that the client displays separately from the conversation.
-
-### Remove scheduling
-
-If you don't need scheduling, remove `scheduleTask`, `getScheduledTasks`, and `cancelScheduledTask` from the tools object, the `executeTask` method, and the schedule-related imports (`getSchedulePrompt`, `scheduleSchema`, `Schedule`, `generateId`).
-
-### Add state beyond chat messages
-
-Use `this.setState()` and `this.state` for real-time state that syncs to all connected clients. See [Store and sync state](https://developers.cloudflare.com/agents/api-reference/store-and-sync-state/).
-
-### Add callable methods
-
-Expose agent methods as typed RPC that your client can call directly:
-
-```ts
-import { callable } from "agents";
-
-export class ChatAgent extends AIChatAgent<Env> {
-  @callable()
-  async getStats() {
-    return { messageCount: this.messages.length };
-  }
-}
-
-// Client-side:
-const stats = await agent.call("getStats");
-```
-
-See [Callable methods](https://developers.cloudflare.com/agents/api-reference/callable-methods/).
-
-### Connect to MCP servers
-
-Add external tools from MCP servers:
-
-```ts
-async onChatMessage(onFinish, options) {
-  // Connect to an MCP server
-  await this.mcp.connect("https://my-mcp-server.example/sse");
-
-  const result = streamText({
-    // ...
-    tools: {
-      ...myTools,
-      ...this.mcp.getAITools() // Include MCP tools
-    }
-  });
-}
-```
-
-See [MCP Client API](https://developers.cloudflare.com/agents/api-reference/mcp-client-api/).
-
-## Use a different AI model provider
-
-The starter uses [Workers AI](https://developers.cloudflare.com/workers-ai/) by default (no API key needed). To use a different provider:
-
-### OpenAI
-
-```bash
-npm install @ai-sdk/openai
-```
-
-```ts
-// In server.ts, replace the model:
-import { openai } from "@ai-sdk/openai";
-
-// Inside onChatMessage:
-const result = streamText({
-  model: openai("gpt-5.2")
-  // ...
-});
-```
-
-Create a `.env` file with your API key:
-
-```
-OPENAI_API_KEY=your-key-here
-```
-
-### Anthropic
-
-```bash
-npm install @ai-sdk/anthropic
-```
-
-```ts
-import { anthropic } from "@ai-sdk/anthropic";
-
-const result = streamText({
-  model: anthropic("claude-sonnet-4-20250514")
-  // ...
-});
-```
-
-Create a `.env` file with your API key:
-
-```
-ANTHROPIC_API_KEY=your-key-here
-```
-
-## Deploy
+Deploy to Cloudflare Workers:
 
 ```bash
 npm run deploy
 ```
 
-Your agent is live on Cloudflare's global network. Messages persist in SQLite, streams resume on disconnect, and the agent hibernates when idle.
+## Files of interest
 
-## Learn more
+- `src/server.ts` — main agent logic, filtering, ranking, and state handling
+- `src/app.tsx` — chat UI
+- `src/data/restrooms.ts` — restroom dataset used by the app
+- `PROMPTS.md` — prompts used during AI-assisted development
 
-- [Agents SDK documentation](https://developers.cloudflare.com/agents/)
-- [Build a chat agent tutorial](https://developers.cloudflare.com/agents/getting-started/build-a-chat-agent/)
-- [Chat agents API reference](https://developers.cloudflare.com/agents/api-reference/chat-agents/)
-- [Workers AI models](https://developers.cloudflare.com/workers-ai/models/)
+## Current limitations
 
-## License
+- Coverage is strongest in **Boston, New York City, and San Francisco**.
+- Results outside those cities may be sparse or less well-tested.
+- Accessibility details depend on the quality of the underlying source data.
+- Route suggestions are strongest when the app has good coordinates for both the user’s intended area and restroom candidates.
 
-MIT
+## Why this project exists
+
+Bathroom Access Concierge extends the broader Bathroom Access mission with a conversational AI interface. Instead of making users sift through raw records, it helps them find suitable restroom options through natural language, remembered preferences, and iterative refinement.
+
+## AI development notes
+
+This repository should also include a `PROMPTS.md` file documenting prompts used during AI-assisted development.
