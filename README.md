@@ -4,10 +4,14 @@ Bathroom Access Concierge is a conversational AI agent for finding public restro
 
 It is built as an AI layer on top of restroom data, with a chat interface that lets users ask natural questions like:
 
-- “Show me accessible restrooms near Back Bay.”
+- “Show me restrooms near Back Bay, open now.”
 - “I’m at Fisherman’s Wharf and heading to Union Square. Suggest one along the way.”
 - “What about one closer to the destination?”
-- “Remember that I prefer single-stall restrooms.”
+- “I prefer wheelchair-accessible restrooms.”
+
+## Why this project exists
+
+Bathroom Access Concierge extends the broader Bathroom Access mission (at [bathroomaccess.com](https://bathroomaccess.com/)) with a conversational AI interface. Instead of making users sift through a separate app for their own needs, it helps them find suitable restroom options through natural language, remembered preferences, and iterative refinement.
 
 ## Live demo
 
@@ -194,7 +198,3 @@ npm run deploy
 - Results outside those cities may be sparse or less well-tested.
 - Accessibility details depend on the quality of the underlying source data.
 - Route suggestions are strongest when the app has good coordinates for both the user’s intended area and restroom candidates.
-
-## Why this project exists
-
-Bathroom Access Concierge extends the broader Bathroom Access mission with a conversational AI interface. Instead of making users sift through raw records, it helps them find suitable restroom options through natural language, remembered preferences, and iterative refinement.
