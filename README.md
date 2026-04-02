@@ -198,7 +198,3 @@ npm run deploy
 ## Why this project exists
 
 Bathroom Access Concierge extends the broader Bathroom Access mission with a conversational AI interface. Instead of making users sift through raw records, it helps them find suitable restroom options through natural language, remembered preferences, and iterative refinement.
-
-## AI development notes
-
-This repository should also include a `PROMPTS.md` file documenting prompts used during AI-assisted development.
